@@ -2,14 +2,14 @@ const std = @import("std");
 const scanner = @import("./scanner.zig");
 
 const example =
-\\10 A = 1
-\\20 S = 0
-\\30 IF 10 < A 70
-\\40 S = S + A
-\\50 A = A + 1
-\\60 GOTO 30
-\\70 PRINT S
-\\80 STOP
+    \\10 A = 1
+    \\20 S = 0
+    \\30 IF 10 < A 70
+    \\40 S = S + A
+    \\50 A = A + 1
+    \\60 GOTO 30
+    \\70 PRINT S
+    \\80 STOP
 ;
 
 pub fn main() !void {
@@ -23,7 +23,7 @@ pub fn main() !void {
         if (t.symbol == .newline) {
             std.debug.print("newline\n", .{});
         } else {
-            std.debug.print("{s} ({s})\n", .{@tagName(t.symbol), t.lexeme});
+            std.debug.print("{s} ({s})\n", .{ @tagName(t.symbol), t.lexeme });
         }
     }
 }
