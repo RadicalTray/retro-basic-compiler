@@ -1,5 +1,6 @@
 const std = @import("std");
 const scanner = @import("./scanner.zig");
+const parser = @import("./parser.zig");
 
 const example =
     \\10 A = 1
@@ -10,20 +11,28 @@ const example =
     \\60 GOTO 30
     \\70 PRINT S
     \\80 STOP
+    \\
 ;
 
 pub fn main() !void {
     const gpa = std.heap.smp_allocator;
 
+    // NOTE: input string must live longer than tokens
     var token_arena_allocator: std.heap.ArenaAllocator = .init(gpa);
     defer token_arena_allocator.deinit();
     const token_arena = token_arena_allocator.allocator();
     const tokens = try scanner.scan(token_arena, example);
     for (tokens) |t| {
         if (t.symbol == .newline) {
-            std.debug.print("newline\n", .{});
+            std.debug.print("newline \n", .{});
         } else {
-            std.debug.print("{s} ({s})\n", .{ @tagName(t.symbol), t.lexeme });
+            std.debug.print("{s} ({s}) ", .{ @tagName(t.symbol), t.lexeme });
         }
+    }
+    std.debug.print("\n", .{});
+
+    const lines = try parser.parse(token_arena, tokens);
+    for (lines) |l| {
+        std.debug.print("{}\n", .{l}); // TODO: line custom fmt
     }
 }

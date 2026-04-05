@@ -25,10 +25,14 @@ line_num is {1..1000}
 - give warning to invalid constant and line_num?
 - dunno if IF > is supported, and if IF can compare between ids, and if expression can have multiple operations
 - features: B-code/Retro-Basic interpreter
+- limitations: doesn't support empty files, and nested expressions
+
+- IMPORTANT: handle newline/eof at the end there is no guarantee that there's a newline
 
 Grammar
 ```
-line: line_number statement
+program: line+
+line: line_number statement newline
 statement:
         | assignment
         | if
@@ -37,10 +41,11 @@ statement:
         | stop
 
 assignment: id '=' expression
+# NEEDS WORK
 expression: (id | constant) ('+' | '-') (id | constant)
 
 if: 'IF' condition line_number
-condition: (id | constant) ('<' | '=' | '>') (id | constant)
+condition: (id | constant) ('<' | '<=' | '=' | '>=' | '>') (id | constant)
 
 print: 'PRINT' id
 

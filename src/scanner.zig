@@ -17,7 +17,9 @@ pub const Token = struct {
 };
 
 pub const Symbol = union(enum) {
-    const Tag = std.meta.Tag(@This());
+    pub const Tag = std.meta.Tag(@This());
+
+    eof,
 
     // 1 char
     equal,
@@ -28,8 +30,8 @@ pub const Symbol = union(enum) {
     newline, // statement separator
 
     // 2 char
-    less_or_equal,
-    greater_or_equal,
+    less_equal,
+    greater_equal,
 
     // multiple char
     // keywords
@@ -54,6 +56,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
         const c = source[current];
         current += 1;
 
+        // TODO: make it not stop immediately when an error occurrs
         const symbol: Symbol = switch (c) {
             '=' => .equal,
             '+' => .plus,
@@ -65,7 +68,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
             '<' => blk: {
                 if (peek(source, current) == '=') {
                     current += 1;
-                    break :blk .less_or_equal;
+                    break :blk .less_equal;
                 } else {
                     break :blk .less;
                 }
@@ -73,7 +76,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
             '>' => blk: {
                 if (peek(source, current) == '=') {
                     current += 1;
-                    break :blk .greater_or_equal;
+                    break :blk .greater_equal;
                 } else {
                     break :blk .greater;
                 }
@@ -98,6 +101,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
         };
         try tokens.append(arena, .init(symbol, source[start..current], line));
     }
+    try tokens.append(arena, .init(.eof, "", line + 1));
 
     return try tokens.toOwnedSlice(arena);
 }
