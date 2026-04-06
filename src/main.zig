@@ -71,12 +71,13 @@ pub fn main() !u8 {
     const out = &out_w.interface;
 
     for (0.., codes) |i, c| {
+        // Doesn't really need an EOF tag
         if (c == .eof) {
             try out.print("0\n", .{});
             break;
         }
 
-        const nums = c.toInt();
+        const nums = c.toInts();
         if (i + 1 < codes.len and (codes[i + 1] == .line or codes[i + 1] == .eof)) {
             try out.print("{} {}\n", .{ nums[0], nums[1] });
         } else {

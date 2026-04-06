@@ -54,7 +54,8 @@ fn genExpressionBCode(gpa: Allocator, codes: *std.ArrayList(BCode), expression: 
 }
 
 pub const BCode = union(Coding) {
-    // NOTE: in their example, only one 0 (u16?) was used in eof, here this uses two 0's.
+    // Doesn't really need EOF, but it just makes more sense to have when there's a random 0 acting
+    // like an EOF.
     eof: u16,
 
     line: u16,
@@ -102,7 +103,7 @@ pub const BCode = union(Coding) {
         return .{ .op = op };
     }
 
-    pub fn toInt(code: BCode) [2]u16 {
+    pub fn toInts(code: BCode) [2]u16 {
         const tag: u16 = @intFromEnum(code);
         const value: u16 = switch (code) {
             .line,
