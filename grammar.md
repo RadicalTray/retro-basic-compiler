@@ -25,35 +25,54 @@ line_num is {1..1000}
 - give warning to invalid constant and line_num?
 - dunno if IF > is supported, and if IF can compare between ids, and if expression can have multiple operations
 - features: B-code/Retro-Basic interpreter
-- limitations: doesn't support empty files, and nested expressions
 
-- IMPORTANT: handle newline/eof at the end there is no guarantee that there's a newline
+- limitations
+    - no nested expressions (1 + 2 + 3)
+    - line number and constant limits aren't enforced
+    - stray newlines are allowed
 
 Grammar
-```
-program: line+
-line: line_number statement newline
+```text
+eof: EOF
+
+equal: '='
+less: '<'
+plus: '+'
+minus: '-'
+newline: '\n'
+
+print: "PRINT"
+goto: "GOTO"
+stop: "STOP"
+if: "IF"
+
+number: NUMBER
+identifier: UPPERCASE_CHARACTER
+
+program: line* eof
+line: number statement newline
 statement:
         | assignment
-        | if
-        | print
-        | goto
-        | stop
+        | if_statement
+        | print_statement
+        | goto_statement
+        | stop_statement
 
-assignment: id '=' expression
-# NEEDS WORK
-expression: (id | constant) ('+' | '-') (id | constant)
+assignment: id equal expression
+expression:
+         | value (plus | minus) value
+         | value
 
-if: 'IF' condition line_number
-condition: (id | constant) ('<' | '<=' | '=' | '>=' | '>') (id | constant)
+if_statement: if condition line_number
+condition: value less value
 
-print: 'PRINT' id
+print_statement: print expression
 
-goto: 'GOTO' line_number
+goto_statement: goto number
 
-stop: 'STOP'
+stop_statement: stop
 
-line_number: 0 ... 1000
-constant: 0 ... 100
-id: A ... Z
+value:
+    | identifier
+    | number
 ```
