@@ -89,7 +89,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
                 while ('A' <= peek(source, current) and peek(source, current) <= 'Z') current += 1;
                 const lexeme = source[start..current];
 
-                if (lexeme.len == 1) break :blk .{ .identifier = c };
+                if (lexeme.len == 1) break :blk .{ .identifier = c - 'A' + 1 }; // A = 1
                 if (eql(u8, lexeme, "PRINT")) break :blk .print;
                 if (eql(u8, lexeme, "GOTO")) break :blk .goto;
                 if (eql(u8, lexeme, "STOP")) break :blk .stop;

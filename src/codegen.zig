@@ -74,8 +74,8 @@ pub const BCode = union(Coding) {
         return .{ .line = line_number };
     }
 
-    pub fn initId(char: u16) BCode {
-        return .{ .id = char - 'A' + 1 }; // A = 1
+    pub fn initId(id: u16) BCode {
+        return .{ .id = id };
     }
 
     pub fn initConst(number: u16) BCode {
