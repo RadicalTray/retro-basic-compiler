@@ -36,6 +36,7 @@ pub fn genBCode(arena: Allocator, lines: []const Line) ![]BCode {
             },
         }
     }
+    try codes.append(arena, .initEof());
 
     return try codes.toOwnedSlice(arena);
 }
@@ -53,6 +54,9 @@ fn genExpressionBCode(gpa: Allocator, codes: *std.ArrayList(BCode), expression: 
 }
 
 pub const BCode = union(Coding) {
+    // NOTE: in their example, only one 0 (u16?) was used in eof, here this uses two 0's.
+    eof: u16,
+
     line: u16,
     id: u16,
     @"const": u16,
@@ -61,6 +65,10 @@ pub const BCode = union(Coding) {
     print: u16,
     stop: u16,
     op: Op,
+
+    pub fn initEof() BCode {
+        return .{ .eof = 0 };
+    }
 
     pub fn initLine(line_number: u16) BCode {
         return .{ .line = line_number };
@@ -93,9 +101,27 @@ pub const BCode = union(Coding) {
     pub fn initOp(op: Op) BCode {
         return .{ .op = op };
     }
+
+    pub fn toInt(code: BCode) [2]u16 {
+        const tag: u16 = @intFromEnum(code);
+        const value: u16 = switch (code) {
+            .line,
+            .id,
+            .@"const",
+            .@"if",
+            .goto,
+            .print,
+            .stop,
+            .eof,
+            => |x| x,
+            .op => |x| @intFromEnum(x),
+        };
+        return .{ tag, value };
+    }
 };
 
 pub const Coding = enum(u16) {
+    eof = 0,
     line = 10,
     id = 11,
     @"const" = 12,
