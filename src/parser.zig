@@ -11,15 +11,8 @@ pub fn parse(arena: Allocator, tokens: []const Token) ![]const Line {
 
     var parser: Parser = .init(arena, tokens);
     while (parser.current < tokens.len) {
-        if (parser.line()) |res| {
-            if (res) |line| {
-                try lines.append(arena, line);
-                std.debug.print("{}\n", .{line});
-            }
-        } else |e| {
-            std.log.err("{}", .{e});
-            std.debug.print("{}\n", .{parser.peek()});
-            return e;
+        if (try parser.line()) |line| {
+            try lines.append(arena, line);
         }
     }
 
