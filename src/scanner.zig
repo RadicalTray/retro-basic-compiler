@@ -40,8 +40,8 @@ pub const Symbol = union(enum) {
     stop,
     @"if",
 
-    number: u64, // constants and line numbers are positive integers
-    identifier: u8, // one [A-Z] only. warns/errors out multiple char identifier if more than 1 letter
+    number: u16, // constants and line numbers are positive integers
+    identifier: u16, // one [A-Z] only. warns/errors out multiple char identifier if more than 1 letter
 };
 
 pub fn scan(arena: Allocator, source: []const u8) ![]Token {
@@ -83,7 +83,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
             },
             '0'...'9' => blk: {
                 while ('0' <= peek(source, current) and peek(source, current) <= '9') current += 1;
-                break :blk .{ .number = try std.fmt.parseInt(u32, source[start..current], 10) }; // TODO: handle parseInt error
+                break :blk .{ .number = try std.fmt.parseInt(u16, source[start..current], 10) }; // TODO: handle parseInt error
             },
             'A'...'Z' => blk: {
                 while ('A' <= peek(source, current) and peek(source, current) <= 'Z') current += 1;

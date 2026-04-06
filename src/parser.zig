@@ -30,7 +30,7 @@ pub fn parse(arena: Allocator, tokens: []const Token) ![]const Line {
 const Parser = struct {
     arena: Allocator,
     tokens: []const Token,
-    current: u32 = 0,
+    current: u16 = 0,
 
     pub fn init(arena: Allocator, tokens: []const Token) Parser {
         return .{
@@ -117,7 +117,7 @@ const Parser = struct {
         }
     }
 
-    fn assignment(p: *Parser, identifier: u8) !Statement {
+    fn assignment(p: *Parser, identifier: u16) !Statement {
         switch (p.peek().symbol) {
             .equal => {
                 p.current += 1;
@@ -190,7 +190,7 @@ const Parser = struct {
 
 // to cheat for the points, stray lines are stripped
 pub const Line = struct {
-    line_number: u64,
+    line_number: u16,
     statement: Statement,
 };
 
@@ -200,17 +200,17 @@ pub const Statement = union(enum) {
     assignment: Assignment,
     @"if": If,
     print: Expression,
-    goto: u64,
+    goto: u16,
     stop,
 
     pub const Assignment = struct {
-        identifier: u8,
+        identifier: u16,
         value: Expression,
     };
 
     pub const If = struct {
         condition: Comparison,
-        line_number: u64,
+        line_number: u16,
     };
 };
 
@@ -223,8 +223,8 @@ pub const Comparison = struct {
 };
 
 pub const Expression = union(enum) {
-    identifier: u8,
-    constant: u64,
+    identifier: u16,
+    constant: u16,
     addition: Addition,
 
     pub const Addition = struct {

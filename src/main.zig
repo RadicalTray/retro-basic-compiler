@@ -1,6 +1,7 @@
 const std = @import("std");
 const scanner = @import("./scanner.zig");
 const parser = @import("./parser.zig");
+const codegen = @import("./codegen.zig");
 
 const example =
     \\10 A = 1
@@ -18,10 +19,11 @@ pub fn main() !void {
     const gpa = std.heap.smp_allocator;
 
     // NOTE: input string must live longer than tokens
-    var token_arena_allocator: std.heap.ArenaAllocator = .init(gpa);
-    defer token_arena_allocator.deinit();
-    const token_arena = token_arena_allocator.allocator();
-    const tokens = try scanner.scan(token_arena, example);
+    var arena_allocator: std.heap.ArenaAllocator = .init(gpa);
+    defer arena_allocator.deinit();
+    const arena = arena_allocator.allocator();
+
+    const tokens = try scanner.scan(arena, example);
     for (tokens) |t| {
         if (t.symbol == .newline) {
             std.debug.print("newline \n", .{});
@@ -31,8 +33,17 @@ pub fn main() !void {
     }
     std.debug.print("\n", .{});
 
-    const lines = try parser.parse(token_arena, tokens);
+    const lines = try parser.parse(arena, tokens);
     for (lines) |l| {
         std.debug.print("{}\n", .{l}); // TODO: line custom fmt
     }
+
+    const codes = try codegen.genBCode(arena, lines);
+    for (0.., codes) |i, c| {
+        std.debug.print("{} ", .{c});
+        if (i + 1 < codes.len and codes[i + 1] == .line) {
+            std.debug.print("\n", .{});
+        }
+    }
+    std.debug.print("\n", .{});
 }
