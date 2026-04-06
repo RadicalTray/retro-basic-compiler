@@ -19,7 +19,6 @@ pub fn parse(arena: Allocator, tokens: []const Token) ![]const Line {
     return try lines.toOwnedSlice(arena);
 }
 
-// TODO: use pattern p.prev() like Lox? because p.current += 1 is really everywhere.
 const Parser = struct {
     arena: Allocator,
     tokens: []const Token,
@@ -181,7 +180,7 @@ const Parser = struct {
     }
 };
 
-// to cheat for the points, stray lines are stripped
+// to cheat for the points, stray lines are ignored
 pub const Line = struct {
     line_number: u16,
     statement: Statement,
@@ -227,8 +226,4 @@ pub const Expression = union(enum) {
 
         pub const Op = enum { plus, minus };
     };
-};
-
-pub const SyntaxNode = union(enum) {
-    pub const Tag = std.meta.Tag(@This());
 };
