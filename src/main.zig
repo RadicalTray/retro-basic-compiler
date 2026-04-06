@@ -1,30 +1,11 @@
 const std = @import("std");
+const eql = std.mem.eql;
+
 const scanner = @import("./scanner.zig");
 const parser = @import("./parser.zig");
 const codegen = @import("./codegen.zig");
 
-const example1 =
-    \\10 A = 1
-    \\20 S = 0
-    \\30 IF 10 < A 70
-    \\40 S = S + A
-    \\50 A = A + 1
-    \\60 GOTO 30
-    \\70 PRINT S
-    \\80 STOP
-    \\
-;
-
-const example2 =
-    \\10 A = 1
-    \\20 IF 10 < A 60
-    \\30 PRINT A
-    \\40 A = A + 1
-    \\50 GOTO 20
-    \\60 STOP
-;
-
-pub fn main() !void {
+pub fn main() !u8 {
     const gpa = std.heap.smp_allocator;
 
     // NOTE: input string must live longer than tokens
@@ -32,41 +13,77 @@ pub fn main() !void {
     defer arena_allocator.deinit();
     const arena = arena_allocator.allocator();
 
-    const tokens = try scanner.scan(arena, example1);
-    // for (tokens) |t| {
-    //     if (t.symbol == .newline) {
-    //         std.debug.print("newline \n", .{});
-    //     } else {
-    //         std.debug.print("{s} ({s}) ", .{ @tagName(t.symbol), t.lexeme });
-    //     }
-    // }
-    // std.debug.print("\n", .{});
+    var input_file: ?[]const u8 = null;
+    var output_file: ?[]const u8 = null;
+    var cyk = false; // TODO:
 
-    const lines = try parser.parse(arena, tokens);
-    // for (lines) |l| {
-    //     std.debug.print("{}\n", .{l}); // TODO: line custom fmt
-    // }
+    const args = try std.process.argsAlloc(arena);
+    {
+        var i: usize = 1; // skip exe
 
-    const codes = try codegen.genBCode(arena, lines);
-    // for (0.., codes) |i, c| {
-    //     std.debug.print("{} ", .{c});
-    //     if (i + 1 < codes.len and codes[i + 1] == .line) {
-    //         std.debug.print("\n", .{});
-    //     }
-    // }
-    // std.debug.print("\n", .{});
+        if (i < args.len and eql(u8, args[i], "cyk")) {
+            cyk = true;
+            i += 1;
+        }
 
-    var stdout_buffer: [128]u8 = undefined;
-    var stdout_w = std.fs.File.stdout().writer(&stdout_buffer);
-    const stdout = &stdout_w.interface;
+        if (i < args.len) {
+            input_file = args[i];
+            i += 1;
+        } else {
+            std.log.err("Expected an input file!", .{});
+            return 1;
+        }
 
-    for (0.., codes) |i, c| {
-        const nums = c.toInt();
-        try stdout.print("{} {} ", .{ nums[0], nums[1] });
-        if (i + 1 < codes.len and (codes[i + 1] == .line or codes[i + 1] == .eof)) {
-            try stdout.print("\n", .{});
+        if (i < args.len) {
+            output_file = args[i];
+            i += 1;
+        }
+
+        if (i < args.len) {
+            std.log.err("Too many arguments!", .{});
+            return 1;
         }
     }
-    try stdout.print("\n", .{});
-    try stdout.flush();
+
+    const input = blk: {
+        if (input_file) |file_path| {
+            break :blk try std.fs.cwd().readFileAlloc(arena, file_path, std.math.maxInt(usize));
+        } else {
+            unreachable;
+        }
+    };
+
+    const tokens = try scanner.scan(arena, input);
+    const lines = try parser.parse(arena, tokens);
+    const codes = try codegen.genBCode(arena, lines);
+
+    const out_f = blk: {
+        if (output_file) |file_path| {
+            break :blk try std.fs.cwd().createFile(file_path, .{});
+        } else {
+            break :blk std.fs.File.stdout();
+        }
+    };
+    defer out_f.close();
+
+    var out_buffer: [128]u8 = undefined;
+    var out_w = out_f.writer(&out_buffer);
+    const out = &out_w.interface;
+
+    for (0.., codes) |i, c| {
+        if (c == .eof) {
+            try out.print("0\n", .{});
+            break;
+        }
+
+        const nums = c.toInt();
+        if (i + 1 < codes.len and (codes[i + 1] == .line or codes[i + 1] == .eof)) {
+            try out.print("{} {}\n", .{ nums[0], nums[1] });
+        } else {
+            try out.print("{} {} ", .{ nums[0], nums[1] });
+        }
+    }
+    try out.flush();
+
+    return 0;
 }
