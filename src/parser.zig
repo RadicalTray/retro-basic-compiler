@@ -122,7 +122,7 @@ const Parser = struct {
 
     fn comparison(p: *Parser) !Comparison {
         const left = try p.arena.create(Expression);
-        left.* = try p.value();
+        left.* = try p.expression();
 
         const op: Comparison.Op = switch (p.peek().symbol) {
             .less => .less,
@@ -135,7 +135,7 @@ const Parser = struct {
         p.current += 1;
 
         const right = try p.arena.create(Expression);
-        right.* = try p.value();
+        right.* = try p.expression();
 
         return .{ .op = op, .l = left, .r = right };
     }

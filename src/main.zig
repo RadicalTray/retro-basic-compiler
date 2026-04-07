@@ -5,6 +5,13 @@ const scanner = @import("./scanner.zig");
 const parser = @import("./parser.zig");
 const codegen = @import("./codegen.zig");
 
+const usage =
+    "Usage:\n" ++
+    "To print BCode to stdout.\n" ++
+    "\tcompiler input.basic\n" ++
+    "To save BCode to a file.\n" ++
+    "\tcompiler input.basic output.bcode\n";
+
 pub fn main() !u8 {
     const gpa = std.heap.smp_allocator;
 
@@ -31,6 +38,7 @@ pub fn main() !u8 {
             i += 1;
         } else {
             std.log.err("Expected an input file!", .{});
+            std.debug.print("{s}", .{usage});
             return 1;
         }
 
@@ -41,6 +49,7 @@ pub fn main() !u8 {
 
         if (i < args.len) {
             std.log.err("Too many arguments!", .{});
+            std.debug.print("{s}", .{usage});
             return 1;
         }
     }

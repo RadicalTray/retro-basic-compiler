@@ -30,3 +30,6 @@
 70 PRINT B   + C
 
 80 STOP
+
+10 B = A + B - C + D + 10
+10 IF A + B - C + D + 10 < A + B - C + D + 10 70

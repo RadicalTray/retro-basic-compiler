@@ -59,20 +59,12 @@ statement:
         | stop_statement
 
 assignment: id equal expression
-expression:
-         | value (plus | minus) value
-         | value
-
 if_statement: if condition line_number
-condition: value (less | equal) value
-
 print_statement: print expression
-
 goto_statement: goto number
-
 stop_statement: stop
 
-value:
-    | identifier
-    | number
+condition: expression (less | equal) expression
+expression: value ((plus | minus) value)*
+value: identifier | number
 ```
