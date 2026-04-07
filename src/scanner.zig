@@ -96,7 +96,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
                 if (eql(u8, lexeme, "IF")) break :blk .@"if";
                 return error.InvalidIdentifier;
             },
-            ' ' => continue,
+            ' ', '\t', '\r' => continue,
             else => return error.UnexpectedCharacter,
         };
         try tokens.append(arena, .init(symbol, source[start..current], line));

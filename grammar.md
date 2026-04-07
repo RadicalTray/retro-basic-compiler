@@ -64,7 +64,7 @@ expression:
          | value
 
 if_statement: if condition line_number
-condition: value less value
+condition: value (less | equal) value
 
 print_statement: print expression
 
