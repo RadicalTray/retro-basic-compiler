@@ -2,16 +2,43 @@
 
 const std = @import("std");
 const Allocator = std.mem.Allocator;
+const print = std.debug.print;
 
 const scanner = @import("scanner.zig");
 const Token = scanner.Token;
-const Symbol = scanner.Symbol;
+const Symbol = scanner.Symbol.Tag;
 
-pub const SyntaxNode = union(enum) {
-    const Tag = std.meta.Tag(@This());
+const Word = union(enum) {
+    terminal: Symbol,
+    nonterminal: usize,
+
+    fn symbol(sym: Symbol) Word {
+        return .{ .terminal = sym };
+    }
+
+    fn rule(idx: usize) Word {
+        return .{ .nonterminal = idx };
+    }
+
+    fn equal(lhs: Word, rhs: Word) bool {
+        if (lhs == .terminal and rhs == .terminal) return lhs.terminal == rhs.terminal;
+        if (lhs == .nonterminal and rhs == .nonterminal) return lhs.nonterminal == rhs.nonterminal;
+        return false;
+    }
+};
+
+pub const Production = []const Word;
+
+const Rule = struct {
+    productions: []const Production,
+
+    pub fn init(productions: []const Production) Rule {
+        return .{ .productions = productions };
+    }
 };
 
 const ParsingTable = struct {
+    // TODO: consider BitSet
     list: std.ArrayList(bool),
     input_length: usize,
     rule_count: usize,
@@ -47,143 +74,71 @@ const ParsingTable = struct {
     }
 };
 
-const Rule = struct {
-    productions: std.ArrayList(Production),
-
-    pub fn init(gpa: Allocator, productions: []const Production) !Rule {
-        var prod: std.ArrayList(Production) = try .initCapacity(gpa, productions.len);
-        for (productions) |p| try prod.append(gpa, p);
-        return .{
-            .productions = prod,
-        };
-    }
-};
-
-const Production = union(enum) {
-    pub const Tag = std.meta.Tag(@This());
-
-    terminal: Symbol.Tag,
-    nonterminal: Nonterminal,
-
-    pub const Nonterminal = struct {
-        left: usize,
-        right: usize,
-    };
-};
-
 pub fn parse(arena: Allocator, tokens: []Token) !bool {
     const rules = [_]Rule{
-        // 0 start:
-        //     | line line
-        //     | number line_1
-        try .init(arena, &.{
-            .{ .nonterminal = .{ .left = 1, .right = 1 } },
-            .{ .nonterminal = .{ .left = 14, .right = 2 } },
+        // START RULE FOR CYK'S PARSER
+        .init(&.{
+            &.{ .rule(2), .rule(3) },
         }),
-        // 1 line:
-        //    | line line
-        //    | number line_1
-        try .init(arena, &.{
-            .{ .nonterminal = .{ .left = 1, .right = 1 } },
-            .{ .nonterminal = .{ .left = 14, .right = 2 } },
+
+        .init(&.{
+            &.{ .rule(2), .rule(3) },
         }),
-        // 2 line_1: statement newline
-        try .init(arena, &.{.{ .nonterminal = .{ .left = 3, .right = 15 } }}),
-        // 3 statement:
-        //         | id assignment_1
-        //         | if if_statement_1
-        //         | print id
-        //         | goto number
-        //         | stop
-        try .init(arena, &.{
-            .{ .nonterminal = .{ .left = 13, .right = 4 } },
-            .{ .nonterminal = .{ .left = 17, .right = 7 } },
-            .{ .nonterminal = .{ .left = 18, .right = 13 } },
-            .{ .nonterminal = .{ .left = 19, .right = 14 } },
-            .{ .terminal = .stop },
+        .init(&.{
+            &.{.symbol(.minus)},
+            &.{ .rule(2), .rule(2) },
         }),
-        // 4 assignment_1: equal expression
-        try .init(arena, &.{.{ .nonterminal = .{ .left = 16, .right = 5 } }}),
-        // 5 expression: value expression_1
-        try .init(arena, &.{.{ .nonterminal = .{ .left = 10, .right = 6 } }}),
-        // 6 expression_1: add_op value
-        try .init(arena, &.{.{ .nonterminal = .{ .left = 11, .right = 10 } }}),
-        // 7 if_statement_1: condition number
-        try .init(arena, &.{.{ .nonterminal = .{ .left = 8, .right = 14 } }}),
-        // 8 condition: value condition_1
-        try .init(arena, &.{.{ .nonterminal = .{ .left = 10, .right = 9 } }}),
-        // 9 condition_1: cmp_op value
-        try .init(arena, &.{.{ .nonterminal = .{ .left = 12, .right = 10 } }}),
-        // 10 value:
-        //     | id
-        //     | number
-        try .init(arena, &.{
-            .{ .terminal = .identifier },
-            .{ .terminal = .number },
+        .init(&.{
+            &.{.symbol(.plus)},
+            &.{ .rule(3), .rule(3) },
         }),
-        // 11 add_op:
-        //      | plus
-        //      | minus
-        try .init(arena, &.{
-            .{ .terminal = .plus },
-            .{ .terminal = .minus },
-        }),
-        // 12 cmp_op:
-        //      | less
-        //      | less_equal
-        //      | greater
-        //      | greater_equal
-        //      | equal
-        try .init(arena, &.{
-            .{ .terminal = .less },
-            .{ .terminal = .less_equal },
-            .{ .terminal = .greater },
-            .{ .terminal = .greater_equal },
-            .{ .terminal = .equal },
-        }),
-        // 13 id
-        try .init(arena, &.{.{ .terminal = .identifier }}),
-        // 14 number
-        try .init(arena, &.{.{ .terminal = .number }}),
-        // 15 newline
-        try .init(arena, &.{.{ .terminal = .newline }}),
-        // 16 equal
-        try .init(arena, &.{.{ .terminal = .equal }}),
-        // 17 if
-        try .init(arena, &.{.{ .terminal = .@"if" }}),
-        // 18 print
-        try .init(arena, &.{.{ .terminal = .print }}),
-        // 19 goto
-        try .init(arena, &.{.{ .terminal = .goto }}),
     };
     var table: ParsingTable = try .init(arena, tokens.len, rules.len);
 
-    for (0.., tokens) |s, token|
-        for (0.., rules) |v, rule|
-            for (rule.productions.items) |prod|
-                switch (prod) {
+    for (0.., tokens) |s, token| {
+        for (0.., rules) |v, rule| {
+            for (rule.productions) |prod| {
+                switch (prod[0]) {
                     .terminal => |symbol| if (symbol == token.symbol) table.set(0, s, v, true),
-                    else => {},
-                };
+                    .nonterminal => {},
+                }
+            }
+        }
+    }
 
-    for (1..tokens.len) |l| // length of span
-        for (0..(tokens.len - l + 1)) |s| // start of span
-            for (0..(l - 1)) |p| // partition of span
-                for (0.., rules) |a, rule|
-                    for (rule.productions.items) |prod|
-                        switch (prod) {
-                            .nonterminal => |x| {
-                                const b = x.left;
-                                const c = x.right;
-                                if (table.get(p, s, b) and table.get(l - p, s + p, c)) {
-                                    table.set(l, s, a, true);
+    for (2..(tokens.len + 1)) |l| { // length of span
+        for (1..(tokens.len - l + 2)) |s| { // start of span
+            for (1..l) |p| { // partition of span
+                for (0.., rules) |a, rule| {
+                    for (rule.productions) |prod| {
+                        switch (prod[0]) {
+                            .terminal => {},
+                            .nonterminal => {
+                                const b = prod[0].nonterminal;
+                                const c = prod[1].nonterminal;
+                                if (table.get(p - 1, s - 1, b) and table.get(l - p - 1, s + p - 1, c)) {
+                                    table.set(l - 1, s - 1, a, true);
                                     // back.append(l, s, a, &.{ p, b, c });
                                 }
                             },
-                            else => {},
-                        };
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    std.debug.print("what\n", .{});
+    for (0..tokens.len) |i| {
+        for (0..tokens.len) |j| {
+            std.debug.print("({}, {})[", .{ i, j });
+            for (0..rules.len) |k| {
+                if (table.get(i, j, k)) std.debug.print("{}", .{k});
+                if (k + 1 < rules.len and table.get(i, j, k + 1)) std.debug.print(", ", .{});
+            }
+            std.debug.print("] ", .{});
+        }
+        std.debug.print("\n", .{});
+    }
 
     return table.get(tokens.len - 1, 0, 0);
 }

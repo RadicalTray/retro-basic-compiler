@@ -2,50 +2,90 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const eql = std.mem.eql;
 
-pub const Token = struct {
-    symbol: Symbol,
-    lexeme: []const u8,
-    line: u32,
-
-    pub fn init(symbol: Symbol, lexeme: []const u8, line: u32) Token {
-        return .{
-            .symbol = symbol,
-            .lexeme = lexeme,
-            .line = line,
-        };
-    }
-};
-
 pub const Symbol = union(enum) {
     pub const Tag = std.meta.Tag(@This());
 
     eof,
 
     // 1 char
-    equal,
     less,
+    equal,
     greater,
     plus,
     minus,
-    newline, // statement separator
+    semicolon,
+    left_paren,
+    right_paren,
+    left_bracket,
+    right_bracket,
+    left_brace,
+    right_brace,
+    dot,
+    amp, // &
+    percent,
+    star,
+    tilde,
+    bang, // !
 
     // 2 char
+    equal_equal,
     less_equal,
     greater_equal,
 
-    // multiple char
     // keywords
-    print,
+    auto,
+    @"break",
+    case,
+    char,
+    @"const",
+    @"continue",
+    default,
+    do,
+    double,
+    @"else",
+    @"enum",
+    @"extern",
+    float,
+    @"for",
     goto,
-    stop,
     @"if",
+    @"inline",
+    int,
+    long,
+    register,
+    restrict,
+    @"return",
+    short,
+    signed,
+    sizeof,
+    static,
+    @"struct",
+    @"switch",
+    typedef,
+    @"union",
+    unsigned,
+    void,
+    @"volatile",
+    @"while",
+    _Alignas,
+    _Alignof,
+    _Atomic,
+    _Bool,
+    _Complex,
+    _Generic,
+    _Imaginary,
+    _Noreturn,
+    _Static_assert,
+    _Thread_local,
 
-    number: u16, // constants and line numbers are positive integers
-    identifier: u16, // one [A-Z] only. warns/errors out multiple char identifier if more than 1 letter
+    // values
+    identifier,
+    constant,
+    string,
 };
 
-pub fn scan(arena: Allocator, source: []const u8) ![]Token {
-    var tokens: std.ArrayList(Token) = try .initCapacity(arena, 128);
+pub fn scan(arena: Allocator, source: []const u8) ![]Symbol {
+    var tokens: std.ArrayList(Symbol) = try .initCapacity(arena, 128);
     errdefer tokens.deinit(arena);
 
     var start: u32 = 0;
@@ -56,15 +96,13 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
         const c = source[current];
         current += 1;
 
-        // TODO: make it not stop immediately when an error occurrs
         const symbol: Symbol = switch (c) {
             '=' => .equal,
             '+' => .plus,
             '-' => .minus,
-            '\n' => {
+            '\n' => blk: {
                 line += 1;
-                // break :blk .newline;
-                continue;
+                break :blk .newline;
             },
             '<' => blk: {
                 if (peek(source, current) == '=') {
@@ -90,7 +128,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
                 while ('A' <= peek(source, current) and peek(source, current) <= 'Z') current += 1;
                 const lexeme = source[start..current];
 
-                if (lexeme.len == 1) break :blk .{ .identifier = c - 'A' + 1 }; // A = 1
+                if (lexeme.len == 1) break :blk .{ .identifier = c - 'A' + 1 };
                 if (eql(u8, lexeme, "PRINT")) break :blk .print;
                 if (eql(u8, lexeme, "GOTO")) break :blk .goto;
                 if (eql(u8, lexeme, "STOP")) break :blk .stop;
@@ -102,7 +140,7 @@ pub fn scan(arena: Allocator, source: []const u8) ![]Token {
         };
         try tokens.append(arena, .init(symbol, source[start..current], line));
     }
-    // try tokens.append(arena, .init(.eof, "", line + 1));
+    try tokens.append(arena, .init(.eof, "", line + 1));
 
     return try tokens.toOwnedSlice(arena);
 }
