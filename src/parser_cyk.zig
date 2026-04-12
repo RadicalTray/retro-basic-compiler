@@ -88,6 +88,7 @@ pub fn parse(gpa: Allocator, tokens: []Token, rules: []const Rule, iterations: u
         .name = "CYK Algorithm",
         .success = success,
         .iterations = iterations,
+        .num_tokens = tokens.len,
         .time_ns = time_ns,
     };
 }

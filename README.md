@@ -1,5 +1,8 @@
 # CYK vs Earley
 
+- Safe mode -> Earley >= CYK
+- Fast mode -> CYK > Earley
+
 ## CYK
 - currently a lot faster
 ## Earley

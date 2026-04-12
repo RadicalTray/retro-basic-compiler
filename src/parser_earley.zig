@@ -15,12 +15,12 @@ const Result = @import("main.zig").Result;
 // ohhh so this basically caches where its been (dynamic programming)
 // consider not using usize
 const StateSet = struct {
-    rule: usize, // TODO: needs to convert NamedRule to Rule
-    production: usize, // TODO: needs to convert NamedRule to Rule
-    pos: usize, // position of production, 0 is before the first symbol, len is after the last symbol
-    input_pos: usize, // position of input
+    rule: u16, // TODO: needs to convert NamedRule to Rule
+    production: u16, // TODO: needs to convert NamedRule to Rule
+    pos: u16, // position of production, 0 is before the first symbol, len is after the last symbol
+    input_pos: u32, // position of input
 
-    pub fn init(rule: usize, production: usize, pos: usize, input_pos: usize) StateSet {
+    pub fn init(rule: u16, production: u16, pos: u16, input_pos: u32) StateSet {
         return .{ .rule = rule, .production = production, .pos = pos, .input_pos = input_pos };
     }
 
@@ -43,7 +43,7 @@ const StateSet = struct {
 
 pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule, iterations: usize) !Result {
     const start_state: StateSet = .init(0, 0, 0, 0);
-    const end_state: StateSet = .init(0, 0, rules[0].productions[0].len, 0);
+    const end_state: StateSet = .init(0, 0, @intCast(rules[0].productions[0].len), 0);
 
     var success = false;
     var timer: std.time.Timer = try .start();
@@ -73,6 +73,7 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule, iterati
                         {
                             var next_state = curr_state;
                             next_state.pos += 1;
+                            assert(state.input_pos != k);
                             _ = try S[k].getOrPut(arena, next_state);
                         }
                     }
@@ -89,7 +90,7 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule, iterati
                         .nonterminal => |next_rule| {
                             // PREDICTOR
                             for (0..rules[next_rule].productions.len) |prod_idx| {
-                                _ = try S[k].getOrPut(arena, .init(next_rule, prod_idx, 0, k));
+                                _ = try S[k].getOrPut(arena, .init(@intCast(next_rule), @intCast(prod_idx), 0, @intCast(k)));
                             }
                         },
                     }
@@ -108,6 +109,7 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule, iterati
         .name = "Earley's Algorithm",
         .success = success,
         .iterations = iterations,
+        .num_tokens = tokens.len,
         .time_ns = time_ns,
     };
 }
