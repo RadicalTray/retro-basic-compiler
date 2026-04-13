@@ -7,8 +7,6 @@ const Token = scanner.Token;
 
 const Rule = @import("Rule.zig");
 
-const Result = @import("main.zig").Result;
-
 const ParsingTable = struct {
     // TODO: consider BitSet
     list: std.ArrayList(bool),
@@ -47,60 +45,35 @@ const ParsingTable = struct {
 };
 
 // TODO: memory very bad
-pub fn parse(gpa: Allocator, tokens: []Token, rules: []const Rule, iterations: usize) !Result {
-    var success = false;
-    var timer: std.time.Timer = try .start();
-    for (0..iterations) |_| {
-        var arena_allocator: std.heap.ArenaAllocator = .init(gpa);
-        defer arena_allocator.deinit();
-        const arena = arena_allocator.allocator();
+pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
+    var arena_allocator: std.heap.ArenaAllocator = .init(gpa);
+    defer arena_allocator.deinit();
+    const arena = arena_allocator.allocator();
 
-        var table: ParsingTable = try .init(arena, tokens.len, rules.len);
-        for (0.., tokens) |s, token|
-            for (0.., rules) |v, rule|
-                for (rule.productions) |prod|
-                    switch (prod[0]) {
-                        .terminal => |symbol| if (symbol == token.symbol) table.set(0, s, v, true),
-                        .nonterminal => {},
-                    };
+    var table: ParsingTable = try .init(arena, tokens.len, rules.len);
+    for (0.., tokens) |s, token|
+        for (0.., rules) |v, rule|
+            for (rule.productions) |prod|
+                switch (prod[0]) {
+                    .terminal => |symbol| if (symbol == token.symbol) table.set(0, s, v, true),
+                    .nonterminal => {},
+                };
 
-        for (2..(tokens.len + 1)) |l| // length of span
-            for (1..(tokens.len - l + 2)) |s| // start of span
-                for (1..l) |p| // partition of span
-                    for (0.., rules) |a, rule|
-                        for (rule.productions) |prod|
-                            switch (prod[0]) {
-                                .terminal => {},
-                                .nonterminal => {
-                                    const b = prod[0].nonterminal;
-                                    const c = prod[1].nonterminal;
-                                    if (table.get(p - 1, s - 1, b) and table.get(l - p - 1, s + p - 1, c)) {
-                                        table.set(l - 1, s - 1, a, true);
-                                    }
-                                },
-                            };
+    for (2..(tokens.len + 1)) |l| // length of span
+        for (1..(tokens.len - l + 2)) |s| // start of span
+            for (1..l) |p| // partition of span
+                for (0.., rules) |a, rule|
+                    for (rule.productions) |prod|
+                        switch (prod[0]) {
+                            .terminal => {},
+                            .nonterminal => {
+                                const b = prod[0].nonterminal;
+                                const c = prod[1].nonterminal;
+                                if (table.get(p - 1, s - 1, b) and table.get(l - p - 1, s + p - 1, c)) {
+                                    table.set(l - 1, s - 1, a, true);
+                                }
+                            },
+                        };
 
-        success = table.get(tokens.len - 1, 0, 0);
-    }
-    const time_ns = timer.lap();
-
-    return .{
-        .name = "CYK Algorithm",
-        .success = success,
-        .iterations = iterations,
-        .num_tokens = tokens.len,
-        .time_ns = time_ns,
-    };
+    return table.get(tokens.len - 1, 0, 0);
 }
-
-// for (0..tokens.len) |i| {
-//     for (0..tokens.len) |j| {
-//         std.debug.print("({}, {})[", .{ i, j });
-//         for (0..rules.len) |k| {
-//             if (table.get(i, j, k)) std.debug.print("{}", .{k});
-//             if (k + 1 < rules.len and table.get(i, j, k + 1)) std.debug.print(", ", .{});
-//         }
-//         std.debug.print("] ", .{});
-//     }
-//     std.debug.print("\n", .{});
-// }
