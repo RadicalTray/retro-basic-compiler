@@ -75,5 +75,7 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
                             },
                         };
 
+    // print("N = {}\n", .{table.list.items.len});
+
     return table.get(tokens.len - 1, 0, 0);
 }

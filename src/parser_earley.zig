@@ -1,6 +1,5 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const assert = std.debug.assert;
 
 const scanner = @import("scanner.zig");
 const Token = scanner.Token;
@@ -10,14 +9,13 @@ const Word = Rule.Word;
 const Production = Rule.Production;
 
 // ohhh so this basically caches where its been (dynamic programming)
-// consider not using usize
 const StateSet = struct {
-    rule: u16, // TODO: needs to convert NamedRule to Rule
-    production: u16, // TODO: needs to convert NamedRule to Rule
-    pos: u16, // position of production, 0 is before the first symbol, len is after the last symbol
+    rule: u8,
+    production: u8,
+    pos: u8, // position of production, 0 is before the first symbol, len is after the last symbol
     input_pos: u32, // position of input
 
-    pub fn init(rule: u16, production: u16, pos: u16, input_pos: u32) StateSet {
+    pub fn init(rule: u8, production: u8, pos: u8, input_pos: u32) StateSet {
         return .{ .rule = rule, .production = production, .pos = pos, .input_pos = input_pos };
     }
 
@@ -57,17 +55,25 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
     for (0..tokens.len + 1) |k| {
         var i: usize = 0;
         var states = S[k].keys();
-        while (i < states.len) {
+        while (i < states.len) : ({
+            i += 1;
+            states = S[k].keys();
+        }) {
             const state = states[i];
             if (state.finished(rules)) {
                 // COMPLETER
-                for (S[state.input_pos].keys()) |curr_state| {
+                var j: usize = 0;
+                var states_input_pos = S[state.input_pos].keys();
+                while (j < states_input_pos.len) : ({
+                    j += 1;
+                    states_input_pos = S[state.input_pos].keys();
+                }) {
+                    const curr_state = states_input_pos[j];
                     if (!curr_state.finished(rules) and
                         curr_state.nextWord(rules).equal(state.getRule()))
                     {
                         var next_state = curr_state;
                         next_state.pos += 1;
-                        assert(state.input_pos != k);
                         _ = try S[k].getOrPut(arena, next_state);
                     }
                 }
@@ -89,11 +95,17 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
                     },
                 }
             }
-
-            i += 1;
-            states = S[k].keys();
         }
     }
+
+    // std.debug.print("S = ", .{});
+    // for (0..S.len - 1) |i| std.debug.print("{}, ", .{S[i].keys().len});
+    // std.debug.print("{}\n", .{S[S.len - 1].keys().len});
+    //
+    // var N: usize = 0;
+    // for (S) |s| N += s.keys().len;
+    // std.debug.print("N = {}\n", .{N});
+    // std.debug.print("N * Stateset = {}\n", .{N * @sizeOf(StateSet)});
 
     return S[tokens.len].contains(end_state);
 }

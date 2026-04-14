@@ -11,9 +11,13 @@ const parser_earley = @import("../parser_earley.zig");
 const Result = @import("Result.zig");
 const Data = Result.Data;
 
+// TODO: new code structure
+//  - TestType.zig -> generates inputs & rules
+//  - a file doing something like this file, takes TestType.getStuff() and run
 pub fn run() !void {
     const gpa = std.heap.smp_allocator;
     const n = 10;
+    const tries = 1;
     const pairs = 100;
 
     var inputs: [n][]Token = undefined;
@@ -29,65 +33,87 @@ pub fn run() !void {
     const earley_data = try gpa.alloc(Data, inputs.len);
     defer gpa.free(earley_data);
 
-    const tries = 10;
     for (0.., inputs) |i, tokens| {
-        print("Running CYK {}\n", .{i});
-
+        print("Running CYK {}\n", .{i + 1});
         var cyk_result = false;
         var cyk_timer: Timer = try .start();
         for (0..tries) |_| {
+            // cyk_result = try parser_cyk.parse(gpa, tokens, &.{
+            //     // START RULE FOR CYK'S PARSER
+            //     .init(&.{
+            //         &.{ .rule(2), .rule(3) },
+            //     }),
+            //
+            //     .init(&.{
+            //         &.{ .rule(2), .rule(3) },
+            //     }),
+            //     .init(&.{
+            //         &.{.symbol(.less)},
+            //         &.{ .rule(2), .rule(2) },
+            //     }),
+            //     .init(&.{
+            //         &.{.symbol(.greater)},
+            //         &.{ .rule(3), .rule(3) },
+            //     }),
+            // });
             cyk_result = try parser_cyk.parse(gpa, tokens, &.{
-                // START RULE FOR CYK'S PARSER
                 .init(&.{
                     &.{ .rule(2), .rule(3) },
+                    &.{ .rule(2), .rule(1) },
                 }),
-
                 .init(&.{
-                    &.{ .rule(2), .rule(3) },
+                    &.{ .rule(0), .rule(3) },
                 }),
                 .init(&.{
                     &.{.symbol(.less)},
-                    &.{ .rule(2), .rule(2) },
                 }),
                 .init(&.{
                     &.{.symbol(.greater)},
-                    &.{ .rule(3), .rule(3) },
                 }),
             });
         }
         const cyk_time = cyk_timer.lap();
         cyk_data[i] = .init(cyk_result, tries, tokens.len, cyk_time);
+        if (!cyk_result) return error.CykParseFailed;
+    }
+    print("{f}", .{Result.init("CYK", cyk_data)});
 
-        print("Running Earley {}\n", .{i});
+    print("\n", .{});
 
+    for (0.., inputs) |i, tokens| {
+        print("Running Earley {}\n", .{i + 1});
         var earley_result = false;
         var earley_timer: Timer = try .start();
         for (0..tries) |_| {
+            // earley_result = try parser_earley.parse(gpa, tokens, &.{
+            //     // START RULE FOR EARLEY'S PARSER
+            //     .init(&.{
+            //         &.{.rule(1)},
+            //     }),
+            //
+            //     .init(&.{
+            //         &.{ .rule(2), .rule(3) },
+            //     }),
+            //     .init(&.{
+            //         &.{.symbol(.less)},
+            //         &.{ .rule(2), .rule(2) },
+            //     }),
+            //     .init(&.{
+            //         &.{.symbol(.greater)},
+            //         &.{ .rule(3), .rule(3) },
+            //     }),
+            // });
             earley_result = try parser_earley.parse(gpa, tokens, &.{
-                // START RULE FOR EARLEY'S PARSER
                 .init(&.{
-                    &.{.rule(1)},
-                }),
-
-                .init(&.{
-                    &.{ .rule(2), .rule(3) },
-                }),
-                .init(&.{
-                    &.{.symbol(.less)},
-                    &.{ .rule(2), .rule(2) },
-                }),
-                .init(&.{
-                    &.{.symbol(.greater)},
-                    &.{ .rule(3), .rule(3) },
+                    &.{ .symbol(.less), .rule(0), .symbol(.greater) },
+                    &.{ .symbol(.less), .symbol(.greater) },
                 }),
             });
         }
         const earley_time = earley_timer.lap();
         earley_data[i] = .init(earley_result, tries, tokens.len, earley_time);
+        if (!earley_result) return error.EarleyParseFailed;
     }
-
-    print("{f}", .{Result.init("CYK", cyk_data)});
-    print("\n", .{});
     print("{f}", .{Result.init("Earley", earley_data)});
 }
 
