@@ -18,7 +18,7 @@ pub fn run() !void {
     const gpa = std.heap.smp_allocator;
     const n = 10;
     const tries = 1;
-    const pairs = 100;
+    const pairs = 1;
 
     var inputs: [n][]Token = undefined;
     for (0.., &inputs) |i, *x| {
@@ -39,21 +39,16 @@ pub fn run() !void {
         var cyk_timer: Timer = try .start();
         for (0..tries) |_| {
             // cyk_result = try parser_cyk.parse(gpa, tokens, &.{
-            //     // START RULE FOR CYK'S PARSER
             //     .init(&.{
-            //         &.{ .rule(2), .rule(3) },
-            //     }),
-            //
-            //     .init(&.{
-            //         &.{ .rule(2), .rule(3) },
+            //         &.{ .rule(1), .rule(2) },
             //     }),
             //     .init(&.{
             //         &.{.symbol(.less)},
-            //         &.{ .rule(2), .rule(2) },
+            //         &.{ .rule(1), .rule(1) },
             //     }),
             //     .init(&.{
             //         &.{.symbol(.greater)},
-            //         &.{ .rule(3), .rule(3) },
+            //         &.{ .rule(2), .rule(2) },
             //     }),
             // });
             cyk_result = try parser_cyk.parse(gpa, tokens, &.{
@@ -86,26 +81,24 @@ pub fn run() !void {
         var earley_timer: Timer = try .start();
         for (0..tries) |_| {
             // earley_result = try parser_earley.parse(gpa, tokens, &.{
-            //     // START RULE FOR EARLEY'S PARSER
             //     .init(&.{
-            //         &.{.rule(1)},
-            //     }),
-            //
-            //     .init(&.{
-            //         &.{ .rule(2), .rule(3) },
+            //         &.{ .rule(1), .rule(2) },
             //     }),
             //     .init(&.{
             //         &.{.symbol(.less)},
-            //         &.{ .rule(2), .rule(2) },
+            //         &.{ .rule(1), .rule(1) },
             //     }),
             //     .init(&.{
             //         &.{.symbol(.greater)},
-            //         &.{ .rule(3), .rule(3) },
+            //         &.{ .rule(2), .rule(2) },
             //     }),
             // });
             earley_result = try parser_earley.parse(gpa, tokens, &.{
                 .init(&.{
-                    &.{ .symbol(.less), .rule(0), .symbol(.greater) },
+                    &.{ .rule(1) },
+                }),
+                .init(&.{
+                    &.{ .symbol(.less), .rule(1), .symbol(.greater) },
                     &.{ .symbol(.less), .symbol(.greater) },
                 }),
             });

@@ -15,7 +15,7 @@
   };
 
   outputs =
-    { self, ... }@inputs:
+    { ... }@inputs:
     let
       lib = inputs.nixpkgs.lib;
 
@@ -41,12 +41,12 @@
         { pkgs }:
         {
           default = pkgs.mkShellNoCC {
-            packages = with pkgs; [
+            packages = [
               inputs.zig-overlay.packages.${pkgs.stdenv.hostPlatform.system}."0.15.2"
               inputs.zls.packages.${pkgs.stdenv.hostPlatform.system}.default
             ];
 
-            inputsFrom = with pkgs; [
+            inputsFrom = [
             ];
           };
         }
