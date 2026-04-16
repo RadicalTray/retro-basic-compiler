@@ -48,7 +48,7 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
     const S = try arena.alloc(Set, tokens.len + 1);
     for (S) |*s| {
         s.* = .empty;
-        try s.ensureUnusedCapacity(arena, 256);
+        try s.ensureUnusedCapacity(arena, 2048);
     }
     try S[0].putNoClobber(arena, start_state, {});
 
@@ -98,13 +98,11 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
         }
     }
 
-    // std.debug.print("S = ", .{});
-    // for (0..S.len - 1) |i| std.debug.print("{}, ", .{S[i].keys().len});
-    // std.debug.print("{}\n", .{S[S.len - 1].keys().len});
-    //
-    // var N: usize = 0;
-    // for (S) |s| N += s.keys().len;
-    // std.debug.print("N = {}\n", .{N});
+    for (0..S.len) |i| std.debug.print("S[{}] = {}\n", .{i, S[i].keys().len});
+
+    var N: usize = 0;
+    for (S) |s| N += s.keys().len;
+    std.debug.print("N = {}\n", .{N});
     // std.debug.print("N * Stateset = {}\n", .{N * @sizeOf(StateSet)});
 
     return S[tokens.len].contains(end_state);

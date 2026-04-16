@@ -61,7 +61,8 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
 
     for (2..(tokens.len + 1)) |l| // length of span
         for (1..(tokens.len - l + 2)) |s| // start of span
-            for (1..l) |p| // partition of span
+            for (1..l) |p| { // partition of span
+                // print("({}, {}) = ({}, {}) and ({}, {})\n", .{ l, s, p, s, l - p, s + p });
                 for (0.., rules) |a, rule|
                     for (rule.productions) |prod|
                         switch (prod[0]) {
@@ -74,8 +75,22 @@ pub fn parse(gpa: Allocator, tokens: []const Token, rules: []const Rule) !bool {
                                 }
                             },
                         };
+            };
 
     // print("N = {}\n", .{table.list.items.len});
+
+    // for (0..tokens.len) |i| {
+    //     for (0..tokens.len) |j| {
+    //         const n = tokens.len;
+    //         std.debug.print("({}, {})[", .{ n - i, j + 1 });
+    //         for (0..rules.len) |k| {
+    //             if (table.get(n - i - 1, j, k)) std.debug.print("{}", .{k});
+    //             if (k + 1 < rules.len and table.get(n - i - 1, j, k) and table.get(n - i - 1, j, k + 1)) std.debug.print(", ", .{});
+    //         }
+    //         std.debug.print("] ", .{});
+    //     }
+    //     std.debug.print("\n", .{});
+    // }
 
     return table.get(tokens.len - 1, 0, 0);
 }

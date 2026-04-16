@@ -41,9 +41,18 @@
         { pkgs }:
         {
           default = pkgs.mkShellNoCC {
-            packages = [
+            packages = with pkgs; [
               inputs.zig-overlay.packages.${pkgs.stdenv.hostPlatform.system}."0.15.2"
               inputs.zls.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+              python314
+              python314Packages.matplotlib
+              python314Packages.scikit-learn
+              python314Packages.seaborn
+              python314Packages.numpy
+              python314Packages.pandas
+              python314Packages.scipy
+              python314Packages.python-lsp-server
             ];
 
             inputsFrom = [

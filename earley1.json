@@ -1,0 +1,705 @@
+{
+	"name": "Earley",
+	"data": [
+		{
+			"success": true,
+			"num_tokens": 20,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 684600
+		},
+		{
+			"success": true,
+			"num_tokens": 40,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 1164809
+		},
+		{
+			"success": true,
+			"num_tokens": 60,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 1907927
+		},
+		{
+			"success": true,
+			"num_tokens": 80,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 2418727
+		},
+		{
+			"success": true,
+			"num_tokens": 100,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 3058880
+		},
+		{
+			"success": true,
+			"num_tokens": 120,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 3486107
+		},
+		{
+			"success": true,
+			"num_tokens": 140,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 4103066
+		},
+		{
+			"success": true,
+			"num_tokens": 160,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 4774185
+		},
+		{
+			"success": true,
+			"num_tokens": 180,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 5198656
+		},
+		{
+			"success": true,
+			"num_tokens": 200,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 5442257
+		},
+		{
+			"success": true,
+			"num_tokens": 220,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 6655493
+		},
+		{
+			"success": true,
+			"num_tokens": 240,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 7363229
+		},
+		{
+			"success": true,
+			"num_tokens": 260,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 7975742
+		},
+		{
+			"success": true,
+			"num_tokens": 280,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 8645681
+		},
+		{
+			"success": true,
+			"num_tokens": 300,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 9106220
+		},
+		{
+			"success": true,
+			"num_tokens": 320,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 9698286
+		},
+		{
+			"success": true,
+			"num_tokens": 340,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 9898990
+		},
+		{
+			"success": true,
+			"num_tokens": 360,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 11291985
+		},
+		{
+			"success": true,
+			"num_tokens": 380,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 12190658
+		},
+		{
+			"success": true,
+			"num_tokens": 400,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 12542343
+		},
+		{
+			"success": true,
+			"num_tokens": 420,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 13550431
+		},
+		{
+			"success": true,
+			"num_tokens": 440,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 14469948
+		},
+		{
+			"success": true,
+			"num_tokens": 460,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 14867916
+		},
+		{
+			"success": true,
+			"num_tokens": 480,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 15137004
+		},
+		{
+			"success": true,
+			"num_tokens": 500,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 15881838
+		},
+		{
+			"success": true,
+			"num_tokens": 520,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 17487974
+		},
+		{
+			"success": true,
+			"num_tokens": 540,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 17611487
+		},
+		{
+			"success": true,
+			"num_tokens": 560,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 18874725
+		},
+		{
+			"success": true,
+			"num_tokens": 580,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 19675141
+		},
+		{
+			"success": true,
+			"num_tokens": 600,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 20681973
+		},
+		{
+			"success": true,
+			"num_tokens": 620,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 20989924
+		},
+		{
+			"success": true,
+			"num_tokens": 640,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 22391861
+		},
+		{
+			"success": true,
+			"num_tokens": 660,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 22887760
+		},
+		{
+			"success": true,
+			"num_tokens": 680,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 23675279
+		},
+		{
+			"success": true,
+			"num_tokens": 700,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 24827107
+		},
+		{
+			"success": true,
+			"num_tokens": 720,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 25088648
+		},
+		{
+			"success": true,
+			"num_tokens": 740,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 25518555
+		},
+		{
+			"success": true,
+			"num_tokens": 760,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 26887817
+		},
+		{
+			"success": true,
+			"num_tokens": 780,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 29986902
+		},
+		{
+			"success": true,
+			"num_tokens": 800,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 30765733
+		},
+		{
+			"success": true,
+			"num_tokens": 820,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 30613933
+		},
+		{
+			"success": true,
+			"num_tokens": 840,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 31619441
+		},
+		{
+			"success": true,
+			"num_tokens": 860,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 32687454
+		},
+		{
+			"success": true,
+			"num_tokens": 880,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 32724538
+		},
+		{
+			"success": true,
+			"num_tokens": 900,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 34356890
+		},
+		{
+			"success": true,
+			"num_tokens": 920,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 34464487
+		},
+		{
+			"success": true,
+			"num_tokens": 940,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 34924744
+		},
+		{
+			"success": true,
+			"num_tokens": 960,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 36217059
+		},
+		{
+			"success": true,
+			"num_tokens": 980,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 36632910
+		},
+		{
+			"success": true,
+			"num_tokens": 1000,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 37293341
+		},
+		{
+			"success": true,
+			"num_tokens": 1020,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 38031471
+		},
+		{
+			"success": true,
+			"num_tokens": 1040,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 38551002
+		},
+		{
+			"success": true,
+			"num_tokens": 1060,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 38902484
+		},
+		{
+			"success": true,
+			"num_tokens": 1080,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 43352242
+		},
+		{
+			"success": true,
+			"num_tokens": 1100,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 40734428
+		},
+		{
+			"success": true,
+			"num_tokens": 1120,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 41713387
+		},
+		{
+			"success": true,
+			"num_tokens": 1140,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 42332417
+		},
+		{
+			"success": true,
+			"num_tokens": 1160,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 43059229
+		},
+		{
+			"success": true,
+			"num_tokens": 1180,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 43433383
+		},
+		{
+			"success": true,
+			"num_tokens": 1200,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 44391388
+		},
+		{
+			"success": true,
+			"num_tokens": 1220,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 45048974
+		},
+		{
+			"success": true,
+			"num_tokens": 1240,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 45659258
+		},
+		{
+			"success": true,
+			"num_tokens": 1260,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 46415497
+		},
+		{
+			"success": true,
+			"num_tokens": 1280,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 46942649
+		},
+		{
+			"success": true,
+			"num_tokens": 1300,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 48216970
+		},
+		{
+			"success": true,
+			"num_tokens": 1320,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 48744375
+		},
+		{
+			"success": true,
+			"num_tokens": 1340,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 49581440
+		},
+		{
+			"success": true,
+			"num_tokens": 1360,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 49777029
+		},
+		{
+			"success": true,
+			"num_tokens": 1380,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 52389132
+		},
+		{
+			"success": true,
+			"num_tokens": 1400,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 51543780
+		},
+		{
+			"success": true,
+			"num_tokens": 1420,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 53278212
+		},
+		{
+			"success": true,
+			"num_tokens": 1440,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 52782248
+		},
+		{
+			"success": true,
+			"num_tokens": 1460,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 53830661
+		},
+		{
+			"success": true,
+			"num_tokens": 1480,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 54473390
+		},
+		{
+			"success": true,
+			"num_tokens": 1500,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 54960350
+		},
+		{
+			"success": true,
+			"num_tokens": 1520,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 55928549
+		},
+		{
+			"success": true,
+			"num_tokens": 1540,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 56052807
+		},
+		{
+			"success": true,
+			"num_tokens": 1560,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 58348525
+		},
+		{
+			"success": true,
+			"num_tokens": 1580,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 57281421
+		},
+		{
+			"success": true,
+			"num_tokens": 1600,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 59473453
+		},
+		{
+			"success": true,
+			"num_tokens": 1620,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 61722359
+		},
+		{
+			"success": true,
+			"num_tokens": 1640,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 59490687
+		},
+		{
+			"success": true,
+			"num_tokens": 1660,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 60664045
+		},
+		{
+			"success": true,
+			"num_tokens": 1680,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 61386397
+		},
+		{
+			"success": true,
+			"num_tokens": 1700,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 62290521
+		},
+		{
+			"success": true,
+			"num_tokens": 1720,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 63109877
+		},
+		{
+			"success": true,
+			"num_tokens": 1740,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 63136004
+		},
+		{
+			"success": true,
+			"num_tokens": 1760,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 65009953
+		},
+		{
+			"success": true,
+			"num_tokens": 1780,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 65277905
+		},
+		{
+			"success": true,
+			"num_tokens": 1800,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 65613099
+		},
+		{
+			"success": true,
+			"num_tokens": 1820,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 66490526
+		},
+		{
+			"success": true,
+			"num_tokens": 1840,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 67323144
+		},
+		{
+			"success": true,
+			"num_tokens": 1860,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 68081106
+		},
+		{
+			"success": true,
+			"num_tokens": 1880,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 68669244
+		},
+		{
+			"success": true,
+			"num_tokens": 1900,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 69189291
+		},
+		{
+			"success": true,
+			"num_tokens": 1920,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 69552330
+		},
+		{
+			"success": true,
+			"num_tokens": 1940,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 70132120
+		},
+		{
+			"success": true,
+			"num_tokens": 1960,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 74820242
+		},
+		{
+			"success": true,
+			"num_tokens": 1980,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 76505442
+		},
+		{
+			"success": true,
+			"num_tokens": 2000,
+			"iterations": 5,
+			"n": 0,
+			"time_ns": 77697626
+		}
+	]
+}
